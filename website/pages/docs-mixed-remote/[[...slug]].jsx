@@ -3,6 +3,7 @@ import { productName, productSlug } from 'data/metadata'
 // (using the latter for now for proof-of-concept development)
 import DocsSidenav from '@hashicorp/react-docs-sidenav'
 //
+//
 // Note:  All imports below will eventually be moved into DocsPage
 import s from './style.module.css'
 import { useRouter } from 'next/router'

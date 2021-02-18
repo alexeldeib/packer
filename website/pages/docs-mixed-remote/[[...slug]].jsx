@@ -1,7 +1,12 @@
-import s from './style.module.css'
+import { productName, productSlug } from 'data/metadata'
+// TODO: use DocsPage rather than DocsSidenav
+// (using the latter for now for proof-of-concept development)
 import DocsSidenav from '@hashicorp/react-docs-sidenav'
+//
+// Note:  All imports below will eventually be moved into DocsPage
+import s from './style.module.css'
 import { useRouter } from 'next/router'
-// Only used in getStaticProps
+// Imports below are only used in getStaticProps
 import path from 'path'
 import fs from 'fs'
 import resolveRemoteContent from '@hashicorp/react-docs-sidenav/lib/resolve-remote-content'
@@ -9,10 +14,42 @@ import validateFilePaths from '@hashicorp/react-docs-sidenav/lib/validate-file-p
 import validateRouteStructure from '@hashicorp/react-docs-sidenav/lib/validate-route-structure'
 import fetchGithubFile from '@hashicorp/react-docs-sidenav/lib/fetch-github-file'
 
-const NAV_DATA_PATH = 'data/_docs-nav-data.json'
-const LOCAL_CONTENT_PATH = 'content/docs'
+const NAV_FILE = 'data/_docs-nav-data.json'
+const CONTENT_DIR = 'content/docs'
 
-function SampleDocsPage({ params, navNode, rawMdx, navData }) {
+function DocsRouteSupportRemoteContent(props) {
+  const product = { name: productName, slug: productSlug }
+  return <DocsPageDev product={product} staticProps={props} />
+}
+
+export async function getStaticPaths() {
+  const paths = await generateStaticPaths(NAV_FILE, CONTENT_DIR)
+  return { paths, fallback: false }
+}
+
+export async function getStaticProps({ params }) {
+  const staticProps = await generateStaticProps(
+    NAV_FILE,
+    CONTENT_DIR,
+    params.slug
+  )
+  return { props: { params, ...staticProps } }
+}
+
+export default DocsRouteSupportRemoteContent
+
+//
+//
+//
+// All code below is meant to be
+// moved into DocsPage, just hanging out
+// here for now during development
+//
+//
+//
+
+function DocsPageDev({ staticProps }) {
+  const { params, navNode, rawMdx, navData, localContentDir } = staticProps
   //  Get the root path, eg "docs", from next/router
   const router = useRouter()
   const routeParts = router.route.split('/')
@@ -42,12 +79,12 @@ function SampleDocsPage({ params, navNode, rawMdx, navData }) {
 
           <pre>
             <code>
-              // route data
+              {'// route data'}
               <br />
               <br />
               {JSON.stringify(
                 {
-                  LOCAL_CONTENT_PATH,
+                  localContentDir,
                   rootPath,
                   currentPage: `/${rootPath}/${currentPath}`,
                   params,
@@ -58,7 +95,7 @@ function SampleDocsPage({ params, navNode, rawMdx, navData }) {
               <br />
               <br />
               <br />
-              // nav node
+              {'// nav node'}
               <br />
               <br />
               {JSON.stringify(navNode, null, 2)}
@@ -78,22 +115,22 @@ function SampleDocsPage({ params, navNode, rawMdx, navData }) {
   )
 }
 
-export async function getStaticPaths() {
+async function generateStaticPaths(navDataPath, localContentPath) {
   // Fetch and parse navigation data
-  const navData = await readNavData(NAV_DATA_PATH)
+  const navData = await readNavData(navDataPath, localContentPath)
   //  Transform navigation data into path arrays
   const pagePathArrays = getPathArraysFromNodes(navData)
   // Include an empty array for the "/" index page path
   const allPathArrays = [[]].concat(pagePathArrays)
   const paths = allPathArrays.map((p) => ({ params: { slug: p } }))
-  return { paths, fallback: false }
+  return paths
 }
 
-export async function getStaticProps({ params }) {
+async function generateStaticProps(navDataPath, localContentPath, pathParts) {
   //  Read in the nav data
-  const navData = await readNavData(NAV_DATA_PATH)
+  const navData = await readNavData(navDataPath, localContentPath)
   //  Get the navNode that matches this path
-  const navNode = getNodeFromPathArray(params.slug, navData)
+  const navNode = getNodeFromPathArray(pathParts, navData, localContentPath)
   //  Get the page content
   const { filePath, remoteFile } = navNode
   const rawMdx = filePath
@@ -101,28 +138,21 @@ export async function getStaticProps({ params }) {
       fs.readFileSync(path.join(process.cwd(), filePath), 'utf8')
     : // Fetch remote content using GitHub's API
       await fetchGithubFile(remoteFile)
-  return {
-    props: {
-      params,
-      navData,
-      navNode,
-      rawMdx,
-    },
-  }
+  return { navData, navNode, rawMdx }
 }
 
-async function readNavData(filePath) {
+async function readNavData(filePath, localContentPath) {
   const navDataFile = path.join(process.cwd(), filePath)
   const navData = JSON.parse(fs.readFileSync(navDataFile, 'utf8'))
   // Note: remote content must be resolved before validating navData
   const withRemotes = await resolveRemoteContent(navData)
-  const withFilePaths = await validateFilePaths(withRemotes, LOCAL_CONTENT_PATH)
+  const withFilePaths = await validateFilePaths(withRemotes, localContentPath)
   const withValidStructure = validateRouteStructure(withFilePaths)
   // Return the resolved, validated navData
   return withValidStructure
 }
 
-function getNodeFromPathArray(pathArray, navData) {
+function getNodeFromPathArray(pathArray, navData, localContentPath) {
   // If there is no path array, we return a
   // constructed "home page" node. This is just to
   // provide authoring convenience to not have to define
@@ -132,7 +162,7 @@ function getNodeFromPathArray(pathArray, navData) {
   const isLandingPage = !pathArray || pathArray.length === 0
   if (isLandingPage) {
     return {
-      filePath: path.join(LOCAL_CONTENT_PATH, 'index.mdx'),
+      filePath: path.join(localContentPath, 'index.mdx'),
     }
   }
   //  If it's not a landing page, then we search
@@ -179,5 +209,3 @@ function getPathArraysFromNodes(navNodes) {
   }, [])
   return slugs
 }
-
-export default SampleDocsPage

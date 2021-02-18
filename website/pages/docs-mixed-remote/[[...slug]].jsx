@@ -148,9 +148,14 @@ async function readNavData(filePath, localContentPath) {
   // Note: remote content must be resolved before validating navData
   const withRemotes = await resolveRemoteContent(navData)
   const withFilePaths = await validateFilePaths(withRemotes, localContentPath)
-  const withValidStructure = validateRouteStructure(withFilePaths)
+  // Note: validateRouteStructure returns navData with additional __stack properties,
+  // which detail the path we've inferred for each branch and node
+  // (branches do not have paths defined explicitly, so we need to infer them)
+  // We don't actually need the __stack properties for rendering, they're just
+  // used in validation, so we don't use the output of this function.
+  validateRouteStructure(withFilePaths)
   // Return the resolved, validated navData
-  return withValidStructure
+  return withFilePaths
 }
 
 function getNodeFromPathArray(pathArray, navData, localContentPath) {

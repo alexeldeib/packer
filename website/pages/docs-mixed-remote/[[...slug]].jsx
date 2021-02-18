@@ -78,30 +78,34 @@ function DocsPageDev({ staticProps }) {
             {isRemoteContent ? '📡 Remote Content' : '💼 Local Content'}
           </p>
 
-          <pre>
-            <code>
-              {'// route data'}
-              <br />
-              <br />
-              {JSON.stringify(
-                {
-                  localContentDir,
-                  rootPath,
-                  currentPage: `/${rootPath}/${currentPath}`,
-                  params,
-                },
-                null,
-                2
-              )}
-              <br />
-              <br />
-              <br />
-              {'// nav node'}
-              <br />
-              <br />
-              {JSON.stringify(navNode, null, 2)}
-            </code>
-          </pre>
+          <div style={{ display: 'flex' }}>
+            <pre style={{ width: '50%', marginRight: '8px' }}>
+              <code>
+                {'// route data'}
+                <br />
+                <br />
+                {JSON.stringify(
+                  {
+                    localContentDir,
+                    rootPath,
+                    currentPage: `/${rootPath}/${currentPath}`,
+                    params,
+                  },
+                  null,
+                  2
+                )}
+              </code>
+            </pre>
+
+            <pre style={{ width: '50%' }}>
+              <code>
+                {'// nav node'}
+                <br />
+                <br />
+                {JSON.stringify(navNode, null, 2)}
+              </code>
+            </pre>
+          </div>
 
           {/* <pre>
             <code>{JSON.stringify(navData, null, 2)}</code>

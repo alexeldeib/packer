@@ -103,9 +103,9 @@ function DocsPageDev({ staticProps }) {
             </code>
           </pre>
 
-          <pre>
+          {/* <pre>
             <code>{JSON.stringify(navData, null, 2)}</code>
-          </pre>
+          </pre> */}
 
           <pre>
             <code>{rawMdx}</code>

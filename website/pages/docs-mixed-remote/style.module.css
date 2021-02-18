@@ -1,0 +1,3 @@
+.container {
+  composes: g-grid-container from global;
+}

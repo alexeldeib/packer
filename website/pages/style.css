@@ -12,7 +12,13 @@
 @import '~@hashicorp/react-consent-manager/style.css';
 @import '~@hashicorp/react-content/style.css';
 @import '~@hashicorp/react-docs-page/style.css';
-@import '~@hashicorp/react-docs-sidenav/style.css';
+
+/* @TODO: upgrade all DocsPages to newest prerelease */
+
+/* @import '~@hashicorp/react-docs-sidenav/style.css'; */
+@import '~@hashicorp/react-docs-page/node_modules/@hashicorp/react-docs-sidenav/style.css';
+
+/* END TODO */
 @import '~@hashicorp/react-product-downloader/dist/style.css';
 @import '~@hashicorp/react-search/style.css';
 @import '~@hashicorp/react-subnav/style.css';

@@ -15,7 +15,7 @@ import validateFilePaths from '@hashicorp/react-docs-sidenav/lib/validate-file-p
 import validateRouteStructure from '@hashicorp/react-docs-sidenav/lib/validate-route-structure'
 import fetchGithubFile from '@hashicorp/react-docs-sidenav/lib/fetch-github-file'
 
-const NAV_FILE = 'data/_docs-nav-data.json'
+const NAV_FILE = 'data/_docs-nav-data-migrated-with-remote.json'
 const CONTENT_DIR = 'content/docs'
 
 function DocsRouteSupportRemoteContent(props) {

@@ -1,9 +1,9 @@
 import path from 'path'
 import fs from 'fs'
-import resolveRemoteContent from '@hashicorp/react-docs-sidenav/lib/resolve-remote-content'
-import validateFilePaths from '@hashicorp/react-docs-sidenav/lib/validate-file-paths'
-import validateRouteStructure from '@hashicorp/react-docs-sidenav/lib/validate-route-structure'
-import fetchGithubFile from '@hashicorp/react-docs-sidenav/lib/fetch-github-file'
+import validateFilePaths from '@hashicorp/react-docs-sidenav/utils/validate-file-paths'
+import validateRouteStructure from '@hashicorp/react-docs-sidenav/utils/validate-route-structure'
+import resolveRemoteContent from './utils/resolve-remote-content'
+import fetchGithubFile from './utils/fetch-github-file'
 
 async function generateStaticPaths(navDataPath, localContentPath) {
   // Fetch and parse navigation data

@@ -8,14 +8,14 @@ import mergeRemotePlugins from './utils/fetch-remote-plugin-data'
 
 async function generateStaticPaths(
   navDataPath,
-  remotePluginsDataPath,
-  localContentPath
+  localContentPath,
+  remotePluginsDataPath
 ) {
   // Fetch and parse navigation data
   const navData = await readNavData(
     navDataPath,
-    remotePluginsDataPath,
-    localContentPath
+    localContentPath,
+    remotePluginsDataPath
   )
   //  Transform navigation data into path arrays
   const pagePathArrays = getPathArraysFromNodes(navData)
@@ -27,15 +27,15 @@ async function generateStaticPaths(
 
 async function generateStaticProps(
   navDataPath,
-  remotePluginsDataPath,
   localContentPath,
-  pathParts
+  pathParts,
+  remotePluginsDataPath
 ) {
   //  Read in the nav data
   const navData = await readNavData(
     navDataPath,
-    remotePluginsDataPath,
-    localContentPath
+    localContentPath,
+    remotePluginsDataPath
   )
   //  Get the navNode that matches this path
   const navNode = getNodeFromPathArray(pathParts, navData, localContentPath)
@@ -49,15 +49,19 @@ async function generateStaticProps(
   return { navData, navNode, rawMdx }
 }
 
-async function readNavData(filePath, remotePluginsFilePath, localContentPath) {
+async function readNavData(filePath, localContentPath, remotePluginsFilePath) {
   const navDataFile = path.join(process.cwd(), filePath)
   const navData = JSON.parse(fs.readFileSync(navDataFile, 'utf8'))
   //  Note: remote plugins must be resolved before everything else
-  const remotePluginsFile = path.join(process.cwd(), remotePluginsFilePath)
-  const remotePluginsData = JSON.parse(
-    fs.readFileSync(remotePluginsFile, 'utf-8')
-  )
-  const withRemotePlugins = await mergeRemotePlugins(remotePluginsData, navData)
+  const remotePluginsFile = remotePluginsFilePath
+    ? path.join(process.cwd(), remotePluginsFilePath)
+    : null
+  const remotePluginsData = remotePluginsFilePath
+    ? JSON.parse(fs.readFileSync(remotePluginsFile, 'utf-8'))
+    : []
+  const withRemotePlugins = remotePluginsFilePath
+    ? await mergeRemotePlugins(remotePluginsData, navData)
+    : navData
   // Note: remote content must be resolved before validating navData
   const withRemotes = await resolveRemoteContent(withRemotePlugins)
   const withFilePaths = await validateFilePaths(withRemotes, localContentPath)

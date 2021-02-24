@@ -21,8 +21,8 @@ function DocsRouteSupportRemoteContent(props) {
 export async function getStaticPaths() {
   const paths = await generateStaticPaths(
     NAV_FILE,
-    REMOTE_PLUGINS_FILE,
-    CONTENT_DIR
+    CONTENT_DIR,
+    REMOTE_PLUGINS_FILE
   )
   return { paths, fallback: false }
 }
@@ -30,9 +30,9 @@ export async function getStaticPaths() {
 export async function getStaticProps({ params }) {
   const staticProps = await generateStaticProps(
     NAV_FILE,
-    REMOTE_PLUGINS_FILE,
     CONTENT_DIR,
-    params.slug
+    params.slug,
+    REMOTE_PLUGINS_FILE
   )
   return { props: { params, ...staticProps } }
 }

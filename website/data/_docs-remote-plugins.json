@@ -1,7 +1,9 @@
 [
   {
+    "title": "Scaffolding",
+    "path": "scaffolding",
     "repo": "zchsh/packer-plugin-scaffolding",
-    "branch": "zs.add-docs-github-job",
+    "branch": "main",
     "artifactDir": ".docs-artifacts"
   }
 ]

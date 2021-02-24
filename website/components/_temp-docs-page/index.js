@@ -13,7 +13,14 @@ import { useRouter } from 'next/router'
 //
 
 function DocsPageDev({ staticProps }) {
-  const { params, navNode, rawMdx, navData, localContentDir } = staticProps
+  const {
+    params,
+    navNode,
+    rawMdx,
+    navData,
+    localContentDir,
+    navDataWithPlugins,
+  } = staticProps
   //  Get the root path, eg "docs", from next/router
   const router = useRouter()
   const routeParts = router.route.split('/')
@@ -40,6 +47,10 @@ function DocsPageDev({ staticProps }) {
           <p style={{ background, border, padding: '1rem' }}>
             {isRemoteContent ? '📡 Remote Content' : '💼 Local Content'}
           </p>
+
+          <pre>
+            <code>{JSON.stringify(navDataWithPlugins, null, 2)}</code>
+          </pre>
 
           <div style={{ display: 'flex' }}>
             <pre style={{ width: '50%', marginRight: '8px' }}>

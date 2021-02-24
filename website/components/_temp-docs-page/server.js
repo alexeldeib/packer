@@ -4,10 +4,19 @@ import validateFilePaths from '@hashicorp/react-docs-sidenav/utils/validate-file
 import validateRouteStructure from '@hashicorp/react-docs-sidenav/utils/validate-route-structure'
 import resolveRemoteContent from './utils/resolve-remote-content'
 import fetchGithubFile from './utils/fetch-github-file'
+import mergeRemotePlugins from './utils/fetch-remote-plugin-data'
 
-async function generateStaticPaths(navDataPath, localContentPath) {
+async function generateStaticPaths(
+  navDataPath,
+  remotePluginsDataPath,
+  localContentPath
+) {
   // Fetch and parse navigation data
-  const navData = await readNavData(navDataPath, localContentPath)
+  const navData = await readNavData(
+    navDataPath,
+    remotePluginsDataPath,
+    localContentPath
+  )
   //  Transform navigation data into path arrays
   const pagePathArrays = getPathArraysFromNodes(navData)
   // Include an empty array for the "/" index page path
@@ -16,9 +25,18 @@ async function generateStaticPaths(navDataPath, localContentPath) {
   return paths
 }
 
-async function generateStaticProps(navDataPath, localContentPath, pathParts) {
+async function generateStaticProps(
+  navDataPath,
+  remotePluginsDataPath,
+  localContentPath,
+  pathParts
+) {
   //  Read in the nav data
-  const navData = await readNavData(navDataPath, localContentPath)
+  const navData = await readNavData(
+    navDataPath,
+    remotePluginsDataPath,
+    localContentPath
+  )
   //  Get the navNode that matches this path
   const navNode = getNodeFromPathArray(pathParts, navData, localContentPath)
   //  Get the page content
@@ -31,11 +49,17 @@ async function generateStaticProps(navDataPath, localContentPath, pathParts) {
   return { navData, navNode, rawMdx }
 }
 
-async function readNavData(filePath, localContentPath) {
+async function readNavData(filePath, remotePluginsFilePath, localContentPath) {
   const navDataFile = path.join(process.cwd(), filePath)
   const navData = JSON.parse(fs.readFileSync(navDataFile, 'utf8'))
+  //  Note: remote plugins must be resolved before everything else
+  const remotePluginsFile = path.join(process.cwd(), remotePluginsFilePath)
+  const remotePluginsData = JSON.parse(
+    fs.readFileSync(remotePluginsFile, 'utf-8')
+  )
+  const withRemotePlugins = await mergeRemotePlugins(remotePluginsData, navData)
   // Note: remote content must be resolved before validating navData
-  const withRemotes = await resolveRemoteContent(navData)
+  const withRemotes = await resolveRemoteContent(withRemotePlugins)
   const withFilePaths = await validateFilePaths(withRemotes, localContentPath)
   // Note: validateRouteStructure returns navData with additional __stack properties,
   // which detail the path we've inferred for each branch and node

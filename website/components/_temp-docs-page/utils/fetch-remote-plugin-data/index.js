@@ -30,6 +30,10 @@ async function gatherRemotePlugins(pluginsData) {
       )
     })
   )
+  // TODO - match fetched plugin data to existing nav data
+  // TODO - should slot into parts of tree based on component type
+  // TODO - should error if slotting into tree would replace plugin
+  // TODO - what should the title of the nested tree be?
   console.log(allPluginData)
   return true
 }

@@ -68,6 +68,12 @@ async function resolveNavData(
   remotePluginsFile,
   localContentPath
 ) {
+  // TODO - memo-ize? Will that affect things? Rationale is that NextJS
+  // must be calling this function twice for every page render...
+  // and input arguments and therefore return value will always be the same.
+  //
+  // Also, maybe more important, in this case we are making
+  // quite a few calls to the GitHub API to resolve remote plugin content.
   const localNavData = JSON.parse(
     fs.readFileSync(path.join(process.cwd(), navDataFile), 'utf8')
   )

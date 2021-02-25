@@ -14,6 +14,10 @@ async function generateStaticPaths(navDataFile, localContentDir) {
 }
 
 async function resolveNavData(filePath, localContentDir) {
+  // TODO - memo-ize? Will that affect things? Rationale is that NextJS
+  // must be calling this function twice for every page render...
+  // and input arguments and therefore return value will always be the same.
+  // So may be worth memo-izing.
   const navDataFile = path.join(process.cwd(), filePath)
   const navDataRaw = JSON.parse(fs.readFileSync(navDataFile, 'utf8'))
   const withFilePaths = await validateFilePaths(navDataRaw, localContentDir)

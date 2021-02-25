@@ -5,12 +5,21 @@
 // - All directories must have an "index.mdx" file to serve as
 //   the landing page for the category
 
-export default [
+module.exports = [
   '--------',
   'terminology',
   {
     category: 'commands',
-    content: ['init', 'build', 'console', 'fix', 'fmt', 'inspect', 'validate', 'hcl2_upgrade'],
+    content: [
+      'init',
+      'build',
+      'console',
+      'fix',
+      'fmt',
+      'inspect',
+      'validate',
+      'hcl2_upgrade',
+    ],
   },
   {
     category: 'templates',
@@ -34,7 +43,7 @@ export default [
               'source',
               'variable',
               'packer',
-              'data'
+              'data',
             ],
           },
           {
@@ -42,12 +51,7 @@ export default [
             content: [
               {
                 category: 'contextual',
-                content: [
-                  'aws_secretsmanager',
-                  'consul',
-                  'env',
-                  'vault',
-                ],
+                content: ['aws_secretsmanager', 'consul', 'env', 'vault'],
               },
               {
                 category: 'numeric',
@@ -180,7 +184,7 @@ export default [
         ],
       },
       {
-        category: "legacy_json_templates",
+        category: 'legacy_json_templates',
         content: [
           'builders',
           'communicator',
@@ -188,12 +192,12 @@ export default [
           'post-processors',
           'provisioners',
           'user-variables',
-        ]
+        ],
       },
     ],
   },
   '----------',
-  {category: 'communicators', content: ['ssh', 'winrm']},
+  { category: 'communicators', content: ['ssh', 'winrm'] },
   {
     category: 'builders',
     content: [
@@ -213,7 +217,7 @@ export default [
       'googlecompute',
       'hetzner-cloud',
       'hyperone',
-      {category: 'hyperv', content: ['iso', 'vmcx']},
+      { category: 'hyperv', content: ['iso', 'vmcx'] },
       'linode',
       'lxc',
       'lxd',
@@ -221,14 +225,14 @@ export default [
       'null',
       'oneandone',
       'openstack',
-      {category: 'oracle', content: ['classic', 'oci']},
+      { category: 'oracle', content: ['classic', 'oci'] },
       {
         category: 'outscale',
         content: ['chroot', 'bsu', 'bsusurrogate', 'bsuvolume'],
       },
-      {category: 'parallels', content: ['iso', 'pvm']},
+      { category: 'parallels', content: ['iso', 'pvm'] },
       'profitbricks',
-      {category: 'proxmox', content: ['iso', 'clone']},
+      { category: 'proxmox', content: ['iso', 'clone'] },
       'qemu',
       'scaleway',
       'tencentcloud-cvm',
@@ -254,12 +258,9 @@ export default [
     content: [
       {
         category: 'amazon',
-        content: [
-          'ami',
-          'secretsmanager'
-        ],
+        content: ['ami', 'secretsmanager'],
       },
-    ]
+    ],
   },
   {
     category: 'provisioners',

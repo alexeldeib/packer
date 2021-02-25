@@ -1,70 +1,56 @@
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
 import validateFilePaths from '@hashicorp/react-docs-sidenav/utils/validate-file-paths'
 import validateRouteStructure from '@hashicorp/react-docs-sidenav/utils/validate-route-structure'
-import resolveRemoteContent from './utils/resolve-remote-content'
-import fetchGithubFile from './utils/fetch-github-file'
-import mergeRemotePlugins from './utils/fetch-remote-plugin-data'
+import renderPageMdx from './render-page-mdx'
 
-async function generateStaticPaths(
-  navDataPath,
-  localContentPath,
-  remotePluginsDataPath
-) {
+const PARAM_ID = 'page'
+
+async function generateStaticPaths(navDataFile, localContentDir) {
   // Fetch and parse navigation data
-  const navData = await readNavData(
-    navDataPath,
-    localContentPath,
-    remotePluginsDataPath
-  )
+  const navData = await resolveNavData(navDataFile, localContentDir)
+  const paths = getPathsFromNavData(navData)
+  return paths
+}
+
+async function resolveNavData(filePath, localContentDir) {
+  const navDataFile = path.join(process.cwd(), filePath)
+  const navDataRaw = JSON.parse(fs.readFileSync(navDataFile, 'utf8'))
+  const withFilePaths = await validateFilePaths(navDataRaw, localContentDir)
+  return withFilePaths
+}
+
+async function getPathsFromNavData(navDataResolved) {
   //  Transform navigation data into path arrays
-  const pagePathArrays = getPathArraysFromNodes(navData)
+  const pagePathArrays = getPathArraysFromNodes(navDataResolved)
   // Include an empty array for the "/" index page path
   const allPathArrays = [[]].concat(pagePathArrays)
-  const paths = allPathArrays.map((p) => ({ params: { slug: p } }))
+  const paths = allPathArrays.map((p) => ({ params: { [PARAM_ID]: p } }))
   return paths
 }
 
 async function generateStaticProps(
-  navDataPath,
-  localContentPath,
-  pathParts,
-  remotePluginsDataPath
+  navDataFile,
+  localContentDir,
+  params,
+  productName
 ) {
-  //  Read in the nav data
-  const navData = await readNavData(
-    navDataPath,
-    localContentPath,
-    remotePluginsDataPath
-  )
+  //  Read in the nav data, and resolve local filePaths
+  const navData = await resolveNavData(navDataFile, localContentDir)
+  // Build the currentPath from page parameters
+  const currentPath = params[PARAM_ID] ? params[PARAM_ID].join('/') : ''
   //  Get the navNode that matches this path
-  const navNode = getNodeFromPathArray(pathParts, navData, localContentPath)
-  //  Get the page content
-  const { filePath, remoteFile } = navNode
-  const rawMdx = filePath
-    ? //  Read local content from the filesystem
-      fs.readFileSync(path.join(process.cwd(), filePath), 'utf8')
-    : // Fetch remote content using GitHub's API
-      await fetchGithubFile(remoteFile)
-  return { navData, navNode, rawMdx }
+  const navNode = getNodeFromPath(currentPath, navData, localContentDir)
+  //  Set up the MDX content to re-hydrate client-side
+  const { filePath } = navNode
+  const mdxString = fs.readFileSync(path.join(process.cwd(), filePath), 'utf8')
+  const { mdxSource, frontMatter } = await renderPageMdx(mdxString, productName)
+  // Return all the props
+  return { currentPath, frontMatter, mdxSource, navData }
 }
 
-async function readNavData(filePath, localContentPath, remotePluginsFilePath) {
-  const navDataFile = path.join(process.cwd(), filePath)
-  const navData = JSON.parse(fs.readFileSync(navDataFile, 'utf8'))
-  //  Note: remote plugins must be resolved before everything else
-  const remotePluginsFile = remotePluginsFilePath
-    ? path.join(process.cwd(), remotePluginsFilePath)
-    : null
-  const remotePluginsData = remotePluginsFilePath
-    ? JSON.parse(fs.readFileSync(remotePluginsFile, 'utf-8'))
-    : []
-  const withRemotePlugins = remotePluginsFilePath
-    ? await mergeRemotePlugins(remotePluginsData, navData)
-    : navData
-  // Note: remote content must be resolved before validating navData
-  const withRemotes = await resolveRemoteContent(withRemotePlugins)
-  const withFilePaths = await validateFilePaths(withRemotes, localContentPath)
+async function validateNavData(navData, localContentDir) {
+  const withFilePaths = await validateFilePaths(navData, localContentDir)
   // Note: validateRouteStructure returns navData with additional __stack properties,
   // which detail the path we've inferred for each branch and node
   // (branches do not have paths defined explicitly, so we need to infer them)
@@ -75,17 +61,17 @@ async function readNavData(filePath, localContentPath, remotePluginsFilePath) {
   return withFilePaths
 }
 
-function getNodeFromPathArray(pathArray, navData, localContentPath) {
+function getNodeFromPath(pathToMatch, navData, localContentDir) {
   // If there is no path array, we return a
   // constructed "home page" node. This is just to
   // provide authoring convenience to not have to define
   // this node. However, we could ask for this node to
   // be explicitly defined in `navData` (and if it isn't,
   // then we'd render a 404 for the root path)
-  const isLandingPage = !pathArray || pathArray.length === 0
+  const isLandingPage = pathToMatch === ''
   if (isLandingPage) {
     return {
-      filePath: path.join(localContentPath, 'index.mdx'),
+      filePath: path.join(localContentDir, 'index.mdx'),
     }
   }
   //  If it's not a landing page, then we search
@@ -98,7 +84,6 @@ function getNodeFromPathArray(pathArray, navData, localContentPath) {
     }, [])
   }
   const allNodes = flattenRoutes(navData)
-  const pathToMatch = pathArray.join('/')
   const matches = allNodes.filter((n) => n.path === pathToMatch)
   // Throw an error for missing files - if this happens,
   // we might have an issue with `getStaticPaths` or something
@@ -133,4 +118,10 @@ function getPathArraysFromNodes(navNodes) {
   return slugs
 }
 
-export { generateStaticPaths, generateStaticProps }
+export {
+  generateStaticPaths,
+  generateStaticProps,
+  getNodeFromPath,
+  getPathsFromNavData,
+  validateNavData,
+}

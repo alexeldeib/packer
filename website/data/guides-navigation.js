@@ -5,7 +5,7 @@
 // - All directories must have an "index.mdx" file to serve as
 //   the landing page for the category
 
-export default [
+module.exports = [
   '1.7-plugin-upgrade',
   '1.7-template-upgrade',
   {

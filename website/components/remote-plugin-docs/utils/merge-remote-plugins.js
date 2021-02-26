@@ -1,8 +1,5 @@
 const path = require('path')
-const fetchGithubFile = require('../fetch-github-file')
-//
-//
-//
+const fetchGithubFile = require('./fetch-github-file')
 
 const COMPONENT_TYPES = [
   'builders',
@@ -36,10 +33,7 @@ async function gatherRemotePlugins(pluginsData, navData) {
       return validComponents
     })
   )
-  // TODO - match fetched plugin data to existing nav data
-  // TODO - should slot into parts of tree based on component type
-  // TODO - should error if slotting into tree would replace plugin
-  // TODO - what should the title of the nested tree be?
+
   const allPluginsByType = allPluginData.reduce((acc, pluginData) => {
     pluginData.forEach((p) => {
       const { type, navData } = p

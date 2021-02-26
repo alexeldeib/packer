@@ -7,7 +7,7 @@ import {
 } from '@hashicorp/react-docs-page/server'
 import renderPageMdx from '@hashicorp/react-docs-page/render-page-mdx'
 import fetchGithubFile from './utils/fetch-github-file'
-import mergeRemotePlugins from './utils/fetch-remote-plugin-data'
+import mergeRemotePlugins from './utils/merge-remote-plugins'
 
 async function generateStaticPaths(navDataFile, contentDir, options = {}) {
   const navData = await resolveNavData(navDataFile, contentDir, options)

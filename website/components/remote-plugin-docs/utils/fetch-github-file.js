@@ -1,6 +1,18 @@
-const githubQuery = require('./github-query')
+const fetch = require('isomorphic-unfetch')
 
 const GITHUB_API_TOKEN = process.env.GITHUB_API_TOKEN
+
+async function githubQuery(body, token) {
+  const result = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
+    headers: {
+      Authorization: `bearer ${token}`,
+      ContentType: 'application/json',
+    },
+    body: JSON.stringify(body),
+  })
+  return await result.json()
+}
 
 //  Fetch a file from GitHub using the GraphQL API
 async function getGithubFile({ repo, branch, filePath }) {

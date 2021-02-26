@@ -27,7 +27,7 @@ async function gatherRemotePlugins(pluginsData, navData) {
       const validComponents = componentEntries.filter(Boolean)
       if (validComponents.length === 0) {
         throw new Error(
-          `Could not fetch any component documentation for remote plugin from ${pluginEntry.repo}. This may be a GitHub credential issue at build time, or it may be an issue with missing docs in the source repository.`
+          `Could not fetch any component documentation for remote plugin from ${pluginEntry.repo}. This may be a GitHub credential issue at build time, or it may be an issue with missing docs in the source repository. Please ensure you have a valid GITHUB_API_TOKEN set in .env.local at the root of the project.`
         )
       }
       return validComponents

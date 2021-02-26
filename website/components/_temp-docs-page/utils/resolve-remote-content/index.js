@@ -47,9 +47,10 @@ async function resolveNode(navNode) {
   // data to transform them into REMOTE NavLeaf nodes
   if (navNode.remoteRoutes) {
     const { repo, branch, filePath } = navNode.remoteRoutes
-    const remoteNavData = JSON.parse(
+    const [err, remoteNavData] = JSON.parse(
       await fetchGithubFile({ repo, branch, filePath })
     )
+    if (err) throw new Error(err)
     const remoteRoutes = await resolveRemoteTree(remoteNavData, {
       repo,
       branch,

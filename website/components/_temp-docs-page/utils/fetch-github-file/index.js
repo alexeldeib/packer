@@ -27,17 +27,17 @@ query($repo_name: String!, $repo_owner: String!, $object_expression: String!) {
   // Query the GitHub API, and parse the navigation data
   const result = await githubQuery({ query, variables }, GITHUB_API_TOKEN)
   try {
-    return result.data.repository.object.text
+    const fileText = result.data.repository.object.text
+    return [null, fileText]
   } catch (e) {
-    throw new Error(
-      `Could not fetch remote file text from "${
-        variables.object_expression
-      }" in "${repo_owner}/${repo_name}". Received instead:\n\n${JSON.stringify(
-        result,
-        null,
-        2
-      )}`
-    )
+    const errorMsg = `Could not fetch remote file text from "${
+      variables.object_expression
+    }" in "${repo_owner}/${repo_name}". Received instead:\n\n${JSON.stringify(
+      result,
+      null,
+      2
+    )}`
+    return [errorMsg, null]
   }
 }
 

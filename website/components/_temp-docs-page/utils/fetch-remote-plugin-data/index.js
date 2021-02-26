@@ -15,9 +15,10 @@ async function gatherRemotePlugins(pluginsData, navData) {
   //
   const allPluginData = await Promise.all(
     pluginsData.map(async (pluginEntry) => {
-      return await Promise.all(
+      const componentEntries = await Promise.all(
         COMPONENT_TYPES.map(async (type) => {
           const routes = await gatherPluginBranch(pluginEntry, type)
+          if (!routes) return false
           const isSingleLeaf =
             routes.length === 1 && typeof routes[0].path !== 'undefined'
           const navData = isSingleLeaf
@@ -26,6 +27,13 @@ async function gatherRemotePlugins(pluginsData, navData) {
           return { type, navData }
         })
       )
+      const validComponents = componentEntries.filter(Boolean)
+      if (validComponents.length === 0) {
+        throw new Error(
+          `Could not fetch any component documentation for remote plugin from ${pluginEntry.repo}. This may be a GitHub credential issue at build time, or it may be an issue with missing docs in the source repository.`
+        )
+      }
+      return validComponents
     })
   )
   // TODO - match fetched plugin data to existing nav data
@@ -81,18 +89,23 @@ async function gatherRemotePlugins(pluginsData, navData) {
 }
 
 async function gatherPluginBranch(pluginEntry, component) {
-  const navDataFilePath = `${pluginEntry.artifactDir}/${component}/nav-data.json`
-  const fileResult = await fetchGithubFile({
+  const artifactDir = pluginEntry.artifactDir || '.docs-artifacts'
+  const branch = pluginEntry.branch || 'main'
+  const navDataFilePath = `${artifactDir}/${component}/nav-data.json`
+  const [err, fileResult] = await fetchGithubFile({
     repo: pluginEntry.repo,
-    branch: pluginEntry.branch,
+    branch,
     filePath: navDataFilePath,
   })
+  // If one component errors, that's expected - we try all components.
+  // We'll check one level up to see if ALL components fail.
+  if (err) return false
   const navData = JSON.parse(fileResult)
   return prefixNavDataPath(
     navData,
     {
       repo: pluginEntry.repo,
-      branch: pluginEntry.branch,
+      branch,
       componentArtifactsDir: path.join('.docs-artifacts', component),
     },
     path.join(component, pluginEntry.path)

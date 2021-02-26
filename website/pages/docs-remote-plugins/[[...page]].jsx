@@ -50,11 +50,12 @@ export async function getStaticProps({ params }) {
   const pathToMatch = params.page ? params.page.join('/') : ''
   const navNode = getNodeFromPath(pathToMatch, navData, CONTENT_DIR)
   const { filePath, remoteFile } = navNode
-  const mdxString = filePath
+  const [err, mdxString] = filePath
     ? //  Read local content from the filesystem
-      fs.readFileSync(path.join(process.cwd(), filePath), 'utf8')
+      [null, fs.readFileSync(path.join(process.cwd(), filePath), 'utf8')]
     : // Fetch remote content using GitHub's API
       await fetchGithubFile(remoteFile)
+  if (err) throw new Error(err)
   const { mdxSource, frontMatter } = await renderPageMdx(mdxString, productName)
   // Build the currentPath from page parameters
   const currentPath = !params.page ? '' : params.page.join('/')

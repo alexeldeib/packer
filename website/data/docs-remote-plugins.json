@@ -1,7 +1,1 @@
-[
-  {
-    "title": "Docker",
-    "path": "docker-remote-plugin",
-    "repo": "zchsh/packer-plugin-docker"
-  }
-]
+[]

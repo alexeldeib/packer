@@ -5,6 +5,7 @@ import DocsPage from 'components/_temp-docs-page/docs-page-with-router'
 // Imports below are only used server-side
 import fs from 'fs'
 import path from 'path'
+import moize from 'moize'
 import {
   getNodeFromPath,
   getPathsFromNavData,
@@ -69,6 +70,16 @@ async function resolveNavData(
   remotePluginsFile,
   localContentPath
 ) {
+  const resolveNavDataMemo = moize.promise(resolveNavDataInner)
+  return resolveNavDataMemo(navDataFile, remotePluginsFile, localContentPath)
+}
+
+async function resolveNavDataInner(
+  navDataFile,
+  remotePluginsFile,
+  localContentPath
+) {
+  console.log('Called resolveNavData') // TODO - i don't think i'm using moize properly
   // TODO - memo-ize? Will that affect things? Rationale is that NextJS
   // must be calling this function twice for every page render...
   // and input arguments and therefore return value will always be the same.

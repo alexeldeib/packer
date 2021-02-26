@@ -7,7 +7,6 @@
   {
     "title": "Docker",
     "path": "docker-remote-plugin",
-    "repo": "zchsh/packer-plugin-docker",
-    "branch": "zs.test-packer-plugin-tool"
+    "repo": "zchsh/packer-plugin-docker"
   }
 ]

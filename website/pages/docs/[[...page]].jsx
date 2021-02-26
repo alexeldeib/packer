@@ -1,8 +1,5 @@
 import { productName, productSlug } from 'data/metadata'
 import DocsPage from '@hashicorp/react-docs-page'
-// TODO replace debug component
-// TODO add "Official" /  "Community" labels
-import DocsPageDebug from 'components/remote-plugin-docs/debug-component'
 import PluginTierLabel from 'components/plugin-tier-label'
 // Imports below are only used server-side
 import {
@@ -24,16 +21,13 @@ const OPTIONS = {
 
 function DocsLayout(props) {
   return (
-    <div>
-      <DocsPageDebug {...props} />
-      <DocsPage
-        baseRoute={BASE_ROUTE}
-        mainBranch={MAIN_BRANCH}
-        product={{ name: productName, slug: productSlug }}
-        staticProps={props}
-        additionalComponents={OPTIONS.additionalComponents}
-      />
-    </div>
+    <DocsPage
+      baseRoute={BASE_ROUTE}
+      mainBranch={MAIN_BRANCH}
+      product={{ name: productName, slug: productSlug }}
+      staticProps={props}
+      additionalComponents={OPTIONS.additionalComponents}
+    />
   )
 }
 

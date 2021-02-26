@@ -44,20 +44,33 @@ query($repo_name: String!, $repo_owner: String!, $object_expression: String!) {
 
 function memoize(method) {
   let cache = {}
+  let queries = 0
+  let cacheUses = 0
+  let totalCalls = 0
 
   return async function () {
     let args = JSON.stringify(arguments[0])
     if (!cache[args]) {
+      queries++
+      totalCalls++
       console.log(
-        `Running getGitHubFile with args:\n${JSON.stringify(
-          arguments[0],
-          null,
-          2
-        )}\n`
+        `GH: New API query. ${JSON.stringify({
+          queries,
+          cacheUses,
+          totalCalls,
+        })}`
       )
       cache[args] = method.apply(this, arguments)
     } else {
-      console.log(`Using CACHED getGitHubFile!`)
+      cacheUses++
+      totalCalls++
+      console.log(
+        `GH: Used cache. ${JSON.stringify({
+          queries,
+          cacheUses,
+          totalCalls,
+        })}`
+      )
     }
     return cache[args]
   }

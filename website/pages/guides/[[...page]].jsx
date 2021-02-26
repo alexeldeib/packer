@@ -1,6 +1,5 @@
 import { productName, productSlug } from 'data/metadata'
-// TODO: release stable DocsPage component and use that
-import DocsPage from 'components/_temp-docs-page/docs-page-with-router'
+import DocsPage from '@hashicorp/react-docs-page'
 // Imports below are only used server-side
 import {
   generateStaticPaths,
@@ -8,12 +7,20 @@ import {
 } from 'components/_temp-docs-page/server'
 
 //  Configure the docs path
+const MAIN_BRANCH = 'master' // overrides default "main" value
+const BASE_ROUTE = 'guides'
 const NAV_DATA = 'data/guides-nav-data.json'
 const CONTENT_DIR = 'content/guides'
 
 function DocsLayout(props) {
-  const product = { name: productName, slug: productSlug }
-  return <DocsPage product={product} staticProps={props} />
+  return (
+    <DocsPage
+      baseRoute={BASE_ROUTE}
+      mainBranch={MAIN_BRANCH}
+      product={{ name: productName, slug: productSlug }}
+      staticProps={props}
+    />
+  )
 }
 
 export async function getStaticPaths() {

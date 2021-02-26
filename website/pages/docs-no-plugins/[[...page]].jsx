@@ -8,16 +8,17 @@ import {
 
 //  Configure the docs path
 const MAIN_BRANCH = 'master' // overrides default "main" value
-const BASE_ROUTE = 'intro'
-const NAV_DATA = 'data/intro-nav-data.json'
-const CONTENT_DIR = 'content/intro'
+const BASE_ROUTE = 'docs-no-plugins'
+const NAV_DATA = 'data/docs-nav-data.json'
+const CONTENT_DIR = 'content/docs'
 
 function DocsLayout(props) {
+  const product = { name: productName, slug: productSlug }
   return (
     <DocsPage
       baseRoute={BASE_ROUTE}
       mainBranch={MAIN_BRANCH}
-      product={{ name: productName, slug: productSlug }}
+      product={product}
       staticProps={props}
     />
   )

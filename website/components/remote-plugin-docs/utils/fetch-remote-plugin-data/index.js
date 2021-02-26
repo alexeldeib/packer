@@ -73,7 +73,7 @@ async function gatherRemotePlugins(pluginsData, navData) {
           // (exception: "Community-Supported" comes last)
           if (a.title == 'Community-Supported') return 1
           if (b.title === 'Community-Supported') return -1
-          // (exception: "Custom" comes secondlast)
+          // (exception: "Custom" comes second-last)
           if (a.title == 'Custom') return 1
           if (b.title === 'Custom') return -1
           return a.title < b.title ? -1 : a.title > b.title ? 1 : 0
@@ -101,7 +101,7 @@ async function gatherPluginBranch(pluginEntry, component) {
   // We'll check one level up to see if ALL components fail.
   if (err) return false
   const navData = JSON.parse(fileResult)
-  return prefixNavDataPath(
+  const withPrefixedPath = await prefixNavDataPath(
     navData,
     {
       repo: pluginEntry.repo,
@@ -110,6 +110,25 @@ async function gatherPluginBranch(pluginEntry, component) {
     },
     path.join(component, pluginEntry.path)
   )
+  // Add plugin tier
+  // Parse the plugin tier
+  const pluginOwner = pluginEntry.repo.split('/')[0]
+  const pluginTier = pluginOwner === 'hashicorp' ? 'official' : 'community'
+  const withPluginTier = addPluginTier(withPrefixedPath, pluginTier)
+  //  Return the augmented navData
+  return withPluginTier
+}
+
+function addPluginTier(navData, pluginTier) {
+  return navData.slice().map((navNode) => {
+    if (typeof navNode.path !== 'undefined') {
+      return { ...navNode, pluginTier }
+    }
+    if (navNode.routes) {
+      return { ...navNode, routes: addPluginTier(navNode.routes, pluginTier) }
+    }
+    return navNode
+  })
 }
 
 async function prefixNavDataPath(

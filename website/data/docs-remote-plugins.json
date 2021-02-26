@@ -2,9 +2,7 @@
   {
     "title": "Scaffolding",
     "path": "scaffolding",
-    "repo": "zchsh/packer-plugin-scaffolding",
-    "branch": "main",
-    "artifactsDir": ".docs-artifacts"
+    "repo": "zchsh/packer-plugin-scaffolding"
   },
   {
     "title": "Docker",

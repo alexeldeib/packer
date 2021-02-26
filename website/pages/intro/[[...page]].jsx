@@ -7,10 +7,11 @@ import {
 } from '@hashicorp/react-docs-page/server'
 
 //  Configure the docs path
-const MAIN_BRANCH = 'master' // overrides default "main" value
 const BASE_ROUTE = 'intro'
 const NAV_DATA = 'data/intro-nav-data.json'
 const CONTENT_DIR = 'content/intro'
+// override default "main" value for branch for "edit on this page"
+const MAIN_BRANCH = 'master'
 
 function DocsLayout(props) {
   return (

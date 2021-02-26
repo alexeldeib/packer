@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router'
 
-function DocsPageDebug({ frontMatter, navNode }) {
+function DocsPageDebug({ frontMatter, navNode, mdxSource, mdxString }) {
   //  Get the root path, eg "docs", from next/router
   const router = useRouter()
   const routeParts = router.route.split('/')
@@ -47,6 +47,14 @@ function DocsPageDebug({ frontMatter, navNode }) {
         </div>
         <pre>
           <code>{JSON.stringify({ frontMatter }, null, 2)}</code>
+        </pre>
+
+        <pre>
+          <code>{mdxString}</code>
+        </pre>
+
+        <pre>
+          <code>{JSON.stringify({ mdxSource }, null, 2)}</code>
         </pre>
       </details>
     </div>

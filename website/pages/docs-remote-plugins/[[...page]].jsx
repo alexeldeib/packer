@@ -5,7 +5,6 @@ import DocsPage from 'components/_temp-docs-page/docs-page-with-router'
 // Imports below are only used server-side
 import fs from 'fs'
 import path from 'path'
-import moize from 'moize'
 import {
   getNodeFromPath,
   getPathsFromNavData,
@@ -70,7 +69,7 @@ async function resolveNavData(
   remotePluginsFile,
   localContentPath
 ) {
-  const resolveNavDataMemo = moize.promise(resolveNavDataInner)
+  const resolveNavDataMemo = memoize(resolveNavDataInner)
   return resolveNavDataMemo(navDataFile, remotePluginsFile, localContentPath)
 }
 
@@ -96,6 +95,16 @@ async function resolveNavDataInner(
   const withRemotes = await resolveRemoteContent(withPlugins)
   const withFilePaths = await validateNavData(withRemotes, localContentPath)
   return withFilePaths
+}
+
+function memoize(method) {
+  let cache = {}
+
+  return async function () {
+    let args = JSON.stringify(arguments)
+    cache[args] = cache[args] || method.apply(this, arguments)
+    return cache[args]
+  }
 }
 
 export default DocsWithRemotePlugins

@@ -1,7 +1,7 @@
 import { productName, productSlug } from 'data/metadata'
 import DocsPage from '@hashicorp/react-docs-page'
 // TODO replace debug component with "Community Plugin" label
-import DocsPageDebug from 'components/_temp-docs-page/debug-component'
+import DocsPageDebug from 'components/remote-plugin-docs/debug-component'
 // Imports below are only used server-side
 import fs from 'fs'
 import path from 'path'
@@ -9,11 +9,11 @@ import {
   getNodeFromPath,
   getPathsFromNavData,
   validateNavData,
-} from 'components/_temp-docs-page/server'
-import fetchGithubFile from 'components/_temp-docs-page/utils/fetch-github-file'
-import mergeRemotePlugins from 'components/_temp-docs-page/utils/fetch-remote-plugin-data'
-import resolveRemoteContent from 'components/_temp-docs-page/utils/resolve-remote-content'
-import renderPageMdx from 'components/_temp-docs-page/render-page-mdx'
+} from '@hashicorp/react-docs-page/server'
+import renderPageMdx from '@hashicorp/react-docs-page/render-page-mdx'
+import fetchGithubFile from 'components/remote-plugin-docs/utils/fetch-github-file'
+import mergeRemotePlugins from 'components/remote-plugin-docs/utils/fetch-remote-plugin-data'
+import resolveRemoteContent from 'components/remote-plugin-docs/utils/resolve-remote-content'
 
 //  Configure the docs path
 const MAIN_BRANCH = 'master' // overrides default "main" value

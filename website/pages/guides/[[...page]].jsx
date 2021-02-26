@@ -4,7 +4,7 @@ import DocsPage from '@hashicorp/react-docs-page'
 import {
   generateStaticPaths,
   generateStaticProps,
-} from 'components/_temp-docs-page/server'
+} from '@hashicorp/react-docs-page/server'
 
 //  Configure the docs path
 const MAIN_BRANCH = 'master' // overrides default "main" value

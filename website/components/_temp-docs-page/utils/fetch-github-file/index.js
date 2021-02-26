@@ -37,6 +37,8 @@ query($repo_name: String!, $repo_owner: String!, $object_expression: String!) {
       null,
       2
     )}`
+    console.warning(e)
+    console.warning(errorMsg)
     return [errorMsg, null]
   }
 }

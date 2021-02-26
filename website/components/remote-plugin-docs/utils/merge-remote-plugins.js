@@ -52,12 +52,12 @@ async function gatherRemotePlugins(pluginsData, navData) {
       const type = COMPONENT_TYPES[i]
       const isTypeRoute = n.routes.filter((nn) => nn.path === type).length > 0
       if (isTypeRoute) {
+        const pluginsOfType = allPluginsByType[type]
+        if (!pluginsOfType || pluginsOfType.length == 0) return n
         // if this NavBranch is the parent route for the type,
         // then append all remote plugins of this type to the
         // NavBranch's child routes
-        const routesWithPlugins = n.routes
-          .slice()
-          .concat(allPluginsByType[type])
+        const routesWithPlugins = n.routes.slice().concat(pluginsOfType)
         // console.log(JSON.stringify(routesWithPlugins, null, 2))
         // Also, sort the child routes so the order is alphabetical
         routesWithPlugins.sort((a, b) => {

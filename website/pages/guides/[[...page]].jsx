@@ -30,8 +30,8 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const staticProps = await generateStaticProps(NAV_DATA, CONTENT_DIR, params)
-  return { props: { ...staticProps } }
+  const props = await generateStaticProps(NAV_DATA, CONTENT_DIR, params)
+  return { props }
 }
 
 export default DocsLayout

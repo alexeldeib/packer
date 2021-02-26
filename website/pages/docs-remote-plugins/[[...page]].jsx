@@ -69,16 +69,7 @@ async function resolveNavData(
   remotePluginsFile,
   localContentPath
 ) {
-  const resolveNavDataMemo = memoize(resolveNavDataInner)
-  return resolveNavDataMemo(navDataFile, remotePluginsFile, localContentPath)
-}
-
-async function resolveNavDataInner(
-  navDataFile,
-  remotePluginsFile,
-  localContentPath
-) {
-  console.log('Called resolveNavData') // TODO - i don't think i'm using moize properly
+  console.log('Called resolveNavData')
   // TODO - memo-ize? Will that affect things? Rationale is that NextJS
   // must be calling this function twice for every page render...
   // and input arguments and therefore return value will always be the same.
@@ -95,16 +86,6 @@ async function resolveNavDataInner(
   const withRemotes = await resolveRemoteContent(withPlugins)
   const withFilePaths = await validateNavData(withRemotes, localContentPath)
   return withFilePaths
-}
-
-function memoize(method) {
-  let cache = {}
-
-  return async function () {
-    let args = JSON.stringify(arguments)
-    cache[args] = cache[args] || method.apply(this, arguments)
-    return cache[args]
-  }
 }
 
 export default DocsWithRemotePlugins

@@ -37,10 +37,30 @@ query($repo_name: String!, $repo_owner: String!, $object_expression: String!) {
       null,
       2
     )}`
-    console.warning(e)
-    console.warning(errorMsg)
+    // console.warn(errorMsg)
     return [errorMsg, null]
   }
 }
 
-module.exports = getGithubFile
+function memoize(method) {
+  let cache = {}
+
+  return async function () {
+    let args = JSON.stringify(arguments[0])
+    if (!cache[args]) {
+      console.log(
+        `Running getGitHubFile with args:\n${JSON.stringify(
+          arguments[0],
+          null,
+          2
+        )}\n`
+      )
+      cache[args] = method.apply(this, arguments)
+    } else {
+      console.log(`Using CACHED getGitHubFile!`)
+    }
+    return cache[args]
+  }
+}
+
+module.exports = memoize(getGithubFile)
